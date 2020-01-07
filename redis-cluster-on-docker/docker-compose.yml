@@ -1,0 +1,94 @@
+version: '3'
+services:
+  redis_cluster_1a:
+    image: redis_image:cluster
+    build:
+      context: ./redis1
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.20
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.20
+    container_name: redis_cluster_1a
+  redis_cluster_2a:
+    image: redis_image:cluster
+    stdin_open: true
+    tty: true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.21
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.21
+    depends_on: 
+      - redis_cluster_1a
+    container_name: redis_cluster_2a
+  redis_cluster_3a:
+    image: redis_image:cluster
+    stdin_open: true
+    tty : true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.22
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.22
+    depends_on: 
+      - redis_cluster_2a
+    container_name: redis_cluster_3a
+  redis_cluster_1b:
+    image: redis_image:cluster
+    stdin_open: true
+    tty : true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.23
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.23
+    depends_on: 
+      - redis_cluster_3a
+    container_name: redis_cluster_1b
+  redis_cluster_2b:
+    image: redis_image:cluster
+    stdin_open: true
+    tty : true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.24
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.24
+    depends_on: 
+      - redis_cluster_1b
+    container_name: redis_cluster_2b
+  redis_cluster_3b:
+    image: redis_image:cluster
+    stdin_open: true
+    tty : true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.19.0.25
+    networks:
+      redis_net:
+        ipv4_address: 172.19.0.25
+    depends_on: 
+      - redis_cluster_2b
+    container_name: redis_cluster_3b
+
+networks:
+  redis_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.19.0.0/24

@@ -1,0 +1,73 @@
+version: '3'
+services:
+  redis1:
+    image: redis_image:master
+    build:
+      context: ./redis1
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.18.0.10
+      - MASTER_HOST=172.18.0.10
+      - MASTER_PORT=6001
+      - SENTINEL_PORT=7001
+      - QUORUM=2
+    networks:
+      redis_net:
+        ipv4_address: 172.18.0.10
+    restart: always
+    container_name: redis_master
+  redis2:
+    image: redis_image:slave
+    build:
+      context: ./redis2
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.18.0.11
+      - MASTER_HOST=172.18.0.10
+      - MASTER_PORT=6001
+      - SENTINEL_PORT=7001
+      - QUORUM=2
+    networks:
+      redis_net:
+        ipv4_address: 172.18.0.11
+    depends_on: 
+      - redis1
+    restart: always
+    container_name: redis_slave1
+  redis3:
+    image: redis_image:slave
+    build:
+      context: ./redis3
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty : true
+    environment:
+      - REQUIREPASS=qhdks123
+      - PORT=6001
+      - HOST=172.18.0.12
+      - MASTER_HOST=172.18.0.10
+      - MASTER_PORT=6001
+      - SENTINEL_PORT=7001
+      - QUORUM=2
+    networks:
+      redis_net:
+        ipv4_address: 172.18.0.12
+    depends_on: 
+      - redis1
+    restart: always
+    container_name: redis_slave2
+
+networks:
+  redis_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.18.0.0/24
